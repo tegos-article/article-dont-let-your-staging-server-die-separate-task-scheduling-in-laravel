@@ -1,13 +1,9 @@
-If you're running Laravel in production, you probably use task scheduling.
-It's one of those features that just works - until it stops. Especially on your staging server.
+If you're running Laravel in production, you probably use task scheduling. It's one of those features that just works, until it stops. Especially on your staging server.
 
 ## The Problem
 
-In real-world apps, you must have a staging environment. It's your safe playground to test changes before they hit
-production.
-I run a simple one on a Digital Ocean droplet just 2 vCPUs, nothing fancy.
-It handles my Laravel 10 app like a champ... until one day, it didn't. The server just froze.
-SSHing in and firing up htop revealed both CPU cores maxed out and memory nearly full:
+If you're building real apps, you need a staging environment. It's your safe playground to test changes before they hit production. 
+I run a simple one on a Digital Ocean droplet just 2 vCPUs, nothing really fancy. It handles my Laravel 10 app like a champ... until one day, it didn't. The server just froze and wouldn't respond. I jumped in over SSH and popped open htop revealed both cpu cores maxed out and memory nearly full:
 
 ```
    1[||||||||||||||||||100.0%]   
@@ -15,16 +11,13 @@ SSHing in and firing up htop revealed both CPU cores maxed out and memory nearly
 Mem[||||||||||||||| 3.2G/4.0G]
 ```
 
-Oof. Both cores pegged at 100%, and memory was gasping at 3.2G out of 4G. Not good.
+Brutal. Both CPUs totally pegged, memory barely hanging on at 3.2 out of 4 gigs. Definitely not what you want to see.
 
 ## Why It Matters
 
-The guilty party? A quick ps aux and log dive pointed straight to the scheduler.
-Heavy scheduled commands that make sense in production but kill a smaller staging server:
-price exports every 2h, supplier syncs with thousands of products, and stat metric collection processing large datasets.
+The guilty party? A quick ps aux and scan logs pointed straight to the scheduler. Heavy scheduled commands that make sense in production but kill a smaller staging server: price exports every couple hours, supplier syncs with thousands of products, and crunching huge datasets for stats.
 
-These tasks are necessary in production with proper resources. But staging doesn't need them at the same frequency - or
-at all.
+These tasks are necessary in production with proper resources. Staging just can't handle that load, and honestly, it doesn't even need most of those jobs running so often or at all.
 
 ## The Solution
 
@@ -114,10 +107,7 @@ private function scheduleStaging(Schedule $schedule): void
 
 ## The Results
 
-After separating the workloads, my staging cores chilled under 20% and memory remained stable like 1.5GB.
-The server stayed responsive, and I can still run scheduled tasks whenever I need to. Production continued operating at
-full capacity without any impact.
-Overall, staging is smooth again, tests run quickly, and the setup scales easily as more environments are added.
+Once I split up the workloads, my staging cores chilled under 20% and held steady at around 1.5GB. The server stayed responsive, and I can still run scheduled tasks whenever I need to. Production continued operating at full capacity without any impact.
 
 | Env              | CPU Usage | Memory Usage |
 |------------------|-----------|--------------|
@@ -126,15 +116,15 @@ Overall, staging is smooth again, tests run quickly, and the setup scales easily
 
 ## Conclusions
 
-Separate task schedules by environment from day one, and let staging take it easy.
-Heavy jobs should run less often and keep only essential maintenance routines.
-Copying production schedules blindly to staging is a fast track to chaos - test servers usually have less CPU and
-memory.
+Separate task schedules by environment from day one, and let staging take it easy. Heavy jobs should run less often and keep only essential maintenance routines. Copying production schedules blindly to staging is a fast track to chaos. They usually have less CPU and memory anyway.
 
-After these changes, staging CPU drops to 15-20%, tests run smoothly, and deployments feel confident. Production stays
-strong and untouched.
-This setup scales easily - just add environment checks for new tiers.
+With these changes, staging CPU usage drops to 15-20%, tests run smoothly, and deployments feel confident. Production stays strong and untouched. This setup is easy for scales: just add environment checks for new commands.
 
-Your staging environment should mirror production functionally, not identically. Adjust task frequencies to match your
-server resources.
-Your infrastructure will thank you.
+Your staging environment should mirror production functionally, not identically. Adjust task frequencies to match your server resources. Your infrastructure will appreciate it.
+
+## Author's Note
+
+Thanks for sticking around!
+Find me on [dev.to](https://dev.to/tegos), [linkedin](https://www.linkedin.com/in/ivan-mykhavko/), or you can check out my work on [github](https://github.com/tegos).
+
+**Notes from real-world Laravel.**

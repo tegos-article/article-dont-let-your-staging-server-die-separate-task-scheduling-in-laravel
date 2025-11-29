@@ -30,4 +30,4 @@ Result: staging CPU drops 100% → 15-20%, memory stable, tests smooth.
 
 ## 📎 Read Full
 
-[Don't Let Your Staging Server Die: Separate Task Scheduling in Laravel](https://dev.to/tegos/)
+[Don't Let Your Staging Server Die: Separate Task Scheduling in Laravel](https://dev.to/tegos/dont-let-your-staging-server-die-separate-task-scheduling-in-laravel-420o)
